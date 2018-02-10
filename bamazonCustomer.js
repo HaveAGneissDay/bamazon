@@ -22,6 +22,7 @@ var connection = mysql.createConnection({
 // });
 
 // create menu, via inquirer
+function customerService () {
 inquirer.prompt([ {
     type: "list",
     name: "mainmenu",
@@ -34,27 +35,100 @@ inquirer.prompt([ {
     switch (choices) {
         case choices === "Products for Sale":
         console.log("Here are the products for sale");
+        currentProducts();
         break;
         case choices === "Add to Inventory":
         console.log("What would you like to add to the inventory?");
+        buyProducts();
         break;
         default:
         console.log("Have a nice day!");
     }
 });
+
+}
 // products for sale (functions)
 // low inventory (functions)
 // add to inventory (functions)
-// add new product (functions)
 // switch statement, call the above functions
+function buyProducts () {
+var item = input.item_id;
+var quantity = input.quantity;
 
+// Query db to confirm that the given item ID exists in the desired quantity
+var queryStr = 'SELECT * FROM products WHERE ?';
+
+connection.query(queryStr, { item_id: item }, function (err, data) {
+    if (err) throw err;
+
+    if (data.length === 0) {
+        console.log('ERROR: Invalid Item ID. Please select a valid Item ID.');
+        currentProducts();
+
+    } else {
+        var productData = data[0];
+
+        if (quantity <= productData.quantity) {
+            console.log('Congratulations, the product you requested is in stock! Placing order!');
+
+            var updateQueryStr = 'UPDATE products SET quantity' + (productData.quantity - quantity) + ' WHERE item_id = ' + item;
+
+            // Update the inventory
+            connection.query(updateQueryStr, function (err, data) {
+                if (err) throw err;
+
+                console.log('Your order has been placed! Your total is ' + productData.price * quantity + 'Thank you for shopping with us!');
+
+                connection.end();
+            })
+        } else {
+            console.log('Insufficent Quantity');
+            currentProducts();
+        }
+    }
+})
+}
 
 // function currentProducts()
 // query database, select every item inside db
 // list ids, names, prices, and quantities
+function currentProducts() {
 
+    queryStr = 'SELECT * FROM products';
+
+    // Make the db query
+    connection.query(queryStr, function (err, data) {
+        if (err) throw err;
+
+
+        var output = '';
+        for (var i = 0; i < data.length; i++) {
+            output = '';
+            output += 'Item ID: ' + data[i].item_id + ' | ';
+            output += 'Product Name: ' + data[i].product_name + ' | ';
+            output += 'Department: ' + data[i].department_name + ' | ';
+            output += 'Price: ' + data[i].price + ' | ';
+            output += 'Quantity: ' + data[i].quantity;
+
+            console.log(output);
+        }
+    })
+}
 // function lowInventory()
 // list all items with inventory count < 5
+
+function lowInventory () {
+    queryStr = 'SELECT * FROM products';
+    connection.query(queryStr, function (err, data) {
+        if (err) throw err;
+    for(var i = 0; i < data.length; i++) {
+        if (data[i].quantity <= 5) {
+            console.log(data[i].product_name + ' | ' + data[i].department_name + data[i].price + ' low stock need a restock soon' + '\n' )
+        }
+    }
+
+})
+}
 
 // function addInventory()
 // prompt (inquirer) manager to add more
@@ -64,3 +138,5 @@ inquirer.prompt([ {
 // function newProduct()
 // add new product to db
 // inquirer to prompt item name, cost, department, etc match to your db
+
+customerService();

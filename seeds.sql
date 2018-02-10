@@ -1,5 +1,9 @@
 -- Seed Data goes here
 
+USE bamazonDB;
+
+SELECT * FROM products;
+
 INSERT INTO products (product_name, department_name, price, quantity)
 VALUES ('Bronze Sword', 'Weapons', 300, 500),
 ('Iron Sword', 'Weapons', 500, 500),
