@@ -31,13 +31,13 @@ inquirer.prompt([ {
 }
 ]
 ).then(
-    function () {
-    switch (choices) {
-        case choices === "Products for Sale":
+    function process (answer) {
+    switch (inquirer.choices) {
+        case answer === "Products for Sale":
         console.log("Here are the products for sale");
         currentProducts();
         break;
-        case choices === "Add to Inventory":
+        case answer === "Add to Inventory":
         console.log("What would you like to add to the inventory?");
         buyProducts();
         break;
