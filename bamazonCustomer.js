@@ -35,11 +35,12 @@ inquirer.prompt([ {
     // Need a callback function 
     function (choices) {
     switch (choices) {
-        case choices === "Products for Sale":
+        // choices might only take in array answers
+        case choices[0] === "Products for Sale":
         console.log("Here are the products for sale");
         currentProducts();
         break;
-        case choices === "Add to Inventory":
+        case choices[1] === "Add to Inventory":
         console.log("What would you like to add to the inventory?");
         buyProducts();
         break;
