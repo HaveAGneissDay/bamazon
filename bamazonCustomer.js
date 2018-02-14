@@ -31,13 +31,15 @@ inquirer.prompt([ {
 }
 ]
 ).then(
-    function process (answer) {
-    switch (inquirer.choices) {
-        case answer === "Products for Sale":
+
+    // Need a callback function 
+    function (choices) {
+    switch (choices) {
+        case choices === "Products for Sale":
         console.log("Here are the products for sale");
         currentProducts();
         break;
-        case answer === "Add to Inventory":
+        case choices === "Add to Inventory":
         console.log("What would you like to add to the inventory?");
         buyProducts();
         break;
@@ -63,19 +65,6 @@ connection.query(queryStr, { item_id: item }, function (err, data) {
 
     if (data.length === 0) {
         console.log('ERROR: Invalid Item ID. Please select a valid Item ID.');
-        currentProducts();
-
-    } else {
-        var productData = data[0];
-
-        if (quantity <= productData.quantity) {
-            console.log('Congratulations, the product you requested is in stock! Placing order!');
-
-            var updateQueryStr = 'UPDATE products SET quantity' + (productData.quantity - quantity) + ' WHERE item_id = ' + item;
-
-            // Update the inventory
-            connection.query(updateQueryStr, function (err, data) {
-                if (err) throw err;
 
                 console.log('Your order has been placed! Your total is ' + productData.price * quantity + 'Thank you for shopping with us!');
 
