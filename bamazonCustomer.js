@@ -98,5 +98,5 @@ function currentProducts() {
 }
 
 
-
-currentProducts();
+customerService();
+// currentProducts();
