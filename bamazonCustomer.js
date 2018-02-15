@@ -16,68 +16,58 @@ var connection = mysql.createConnection({
     database: "bamazonDB"
 });
 
-// connection.connect(function (err) {
-//     if (err) throw err;
-//     console.log("connected as id " + connection.threadId + "\n");
-// });
-
 // create menu, via inquirer
-function customerService () {
-inquirer.prompt([ {
-    type: "list",
-    name: "mainmenu",
-    message: "How may I help you today?",
-    choices: ["Products for Sale", "Add to Inventory", "Add New Product"]
-}
-]
-).then(
+function customerService() {
 
-    // Need a callback function 
-    function (choices) {
-    switch (choices) {
-        // choices might only take in array answers
-        case choices[0] === "Products for Sale":
-        console.log("Here are the products for sale");
-        currentProducts();
-        break;
-        case choices[1] === "Add to Inventory":
-        console.log("What would you like to add to the inventory?");
-        buyProducts();
-        break;
-        default:
-        console.log("Have a nice day!");
-    }
-});
+    inquirer.prompt([{
+        type: 'Input',
+        name: 'item_id',
+        message: 'Please enter the ID of the product you wish to purchase',
+        validate: function (value) {
+            var valid = value.match(/^[0-9]+$/)
+            if (valid) {
+                return true
+            }
+            return 'Please enter a valid Product ID'
+        }
+    }, {
+        type: 'input',
+        name: 'quantity',
+        message: 'How many of this product would you like to order?',
+        validate: function (value) {
+            var valid = value.match(/^[0-9]+$/)
+            if (valid) {
+                return true
+            }
+            return 'Please enter a numerical value'
+        }
+    }]).then(function buyProducts(input) {
+        var item = input.item_id;
+        var quantity = input.quantity;
 
-}
-// products for sale (functions)
-// low inventory (functions)
-// add to inventory (functions)
-// switch statement, call the above functions
-function buyProducts () {
-var item = input.item_id;
-var quantity = input.quantity;
+        // Query db to confirm that the given item ID exists in the desired quantity
+        var queryStr = 'SELECT * FROM products WHERE ?';
 
-// Query db to confirm that the given item ID exists in the desired quantity
-var queryStr = 'SELECT * FROM products WHERE ?';
+        connection.query(queryStr, {
+            item_id: item
+        }, function (err, data) {
+            if (err) throw err;
+            console.log(data)
 
-connection.query(queryStr, { item_id: item }, function (err, data) {
-    if (err) throw err;
-
-    if (data.length === 0) {
-        console.log('ERROR: Invalid Item ID. Please select a valid Item ID.');
+            if (data.length === 0) {
+                console.log('ERROR: Invalid Item ID. Please select a valid Item ID.');
 
                 console.log('Your order has been placed! Your total is ' + productData.price * quantity + 'Thank you for shopping with us!');
 
                 connection.end();
-            })
-        } else {
-            console.log('Insufficent Quantity');
-            currentProducts();
-        }
-    }
-})
-}
+            } else {
+                console.log('Insufficent Quantity');
+                currentProducts();
+            }
+        })
+    })
+};
+
 
 // function currentProducts()
 // query database, select every item inside db
@@ -100,33 +90,13 @@ function currentProducts() {
             output += 'Price: ' + data[i].price + ' | ';
             output += 'Quantity: ' + data[i].quantity;
 
-            console.log(output);
         }
+        console.log(output);
+        console.log("--------------------------------------------")
+        customerSerrvice();
     })
 }
-// function lowInventory()
-// list all items with inventory count < 5
 
-function lowInventory () {
-    queryStr = 'SELECT * FROM products';
-    connection.query(queryStr, function (err, data) {
-        if (err) throw err;
-    for(var i = 0; i < data.length; i++) {
-        if (data[i].quantity <= 5) {
-            console.log(data[i].product_name + ' | ' + data[i].department_name + data[i].price + ' low stock need a restock soon' + '\n' )
-        }
-    }
 
-})
-}
 
-// function addInventory()
-// prompt (inquirer) manager to add more
-// items to current product
-// select current item, update sql db
-
-// function newProduct()
-// add new product to db
-// inquirer to prompt item name, cost, department, etc match to your db
-
-customerService();
+currentProducts();
