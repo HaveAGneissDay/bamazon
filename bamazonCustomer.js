@@ -5,7 +5,7 @@ var mysql = require('mysql');
 
 // connect to mysql database
 var connection = mysql.createConnection({
-    host: "bamazon",
+    host: "localhost",
     port: 3306,
 
     // Your username
@@ -83,7 +83,7 @@ function currentProducts() {
 
         var output = '';
         for (var i = 0; i < data.length; i++) {
-            output = '';
+  
             output += 'Item ID: ' + data[i].item_id + ' | ';
             output += 'Product Name: ' + data[i].product_name + ' | ';
             output += 'Department: ' + data[i].department_name + ' | ';
@@ -93,10 +93,10 @@ function currentProducts() {
         }
         console.log(output);
         console.log("--------------------------------------------")
-        customerSerrvice();
+        customerService();
     })
 }
 
 
-customerService();
-// currentProducts();
+// customerService();
+currentProducts();
