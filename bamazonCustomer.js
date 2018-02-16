@@ -42,7 +42,7 @@ function customerService() {
             return 'Please enter a numerical value'
         }
     }]).then(function buyProducts(input) {
-        var item = input.item_id;
+        var item = input.item_ID;
         var quantity = input.quantity;
 
         // Query db to confirm that the given item ID exists in the desired quantity
@@ -84,11 +84,11 @@ function currentProducts() {
         var output = '';
         for (var i = 0; i < data.length; i++) {
   
-            output += 'Item ID: ' + data[i].item_id + ' | ';
+            output += 'Item ID: ' + data[i].item_ID + ' | ';
             output += 'Product Name: ' + data[i].product_name + ' | ';
             output += 'Department: ' + data[i].department_name + ' | ';
             output += 'Price: ' + data[i].price + ' | ';
-            output += 'Quantity: ' + data[i].quantity;
+            output += 'Quantity: ' + data[i].quantity + '\n';
 
         }
         console.log(output);
